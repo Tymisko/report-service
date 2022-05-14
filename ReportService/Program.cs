@@ -17,7 +17,7 @@ namespace ReportService
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[]
             {
-                new Service1()
+                new ReportService()
             };
             ServiceBase.Run(ServicesToRun);
         }

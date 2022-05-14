@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace ReportService
 {
-    public partial class Service1 : ServiceBase
+    public partial class ReportService : ServiceBase
     {
-        public Service1()
+        public ReportService()
         {
             InitializeComponent();
         }

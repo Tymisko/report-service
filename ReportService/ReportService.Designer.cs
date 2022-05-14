@@ -1,6 +1,6 @@
 ﻿namespace ReportService
 {
-    partial class Service1
+    partial class ReportService
     {
         /// <summary> 
         /// Required designer variable.
