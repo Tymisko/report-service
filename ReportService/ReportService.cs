@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.ServiceProcess;
 using System.Timers;
+using ReportService.Models.Domains;
 using ReportService.Repositories;
 
 namespace ReportService
 {
     public partial class ReportService : ServiceBase
     {
+        private const int SendHour = 8;
         private const int IntervalInMinutes = 60;
-        private Timer _timer = new Timer(IntervalInMinutes * 60000);
-        private ErrorRepository _errorRepository = new ErrorRepository();
+        private readonly Timer _timer = new Timer(IntervalInMinutes * 60000);
+        private readonly ErrorRepository _errorRepository = new ErrorRepository();
+        private readonly ReportRepository _reportRepository = new ReportRepository(); 
+
         public ReportService()
         {
             InitializeComponent();
@@ -39,7 +44,17 @@ namespace ReportService
 
         private void SendReport()
         {
+            var actualHour = DateTime.Now.Hour;
 
+            if (actualHour < SendHour) return;
+
+            var report = _reportRepository.GetLastNotSentReport();
+
+            if (report == null) return;
+
+            // TODO: send email
+
+            _reportRepository.ReportSent(report);
         }
 
         protected override void OnStop()

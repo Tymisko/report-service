@@ -27,8 +27,8 @@ namespace ReportService.Models
                 @"
                     <table border=1 cellpadding=5 cellspacing=1>
                         <tr>
-                            <td align=center bgcolor=lightgrey>Wiadomosc</td>
-                            <td align=center bgcolor=lightgrey>Data</td>
+                            <td align=center bgcolor=lightgrey>Message</td>
+                            <td align=center bgcolor=lightgrey>Date</td>
                         </tr>
                 ";
 
@@ -43,7 +43,50 @@ namespace ReportService.Models
                     ";
             }
 
-            html += @"</table><br /><br /><i>Automatyczna wiadomość wysłana z aplikacji ReportService</i>";
+            html += @"</table><br /><br /><i>The message has been sent automatically from the ReportService application.</i>";
+
+            return html;
+        }
+
+        public string GenerateReport(Report report)
+        {
+            if (report == null) throw new ArgumentNullException();
+
+            var html = $"Report {report.Title} from {report.Date:dd-MM-yyyy}. <br />  <br />";
+
+
+            if (report.Positions != null && report.Positions.Any())
+            {
+                html +=
+                    @"
+                    <table border=1 cellpadding=5 cellspacing=1>
+                        <tr>
+                            <td align=center bgcolor=lightgrey>Title</td>
+                            <td align=center bgcolor=lightgrey>Description</td>
+                            <td align=center bgcolor=lightgrey>Value</td>
+                        </tr>
+                ";
+
+                foreach (var reportPosition in report.Positions)
+                {
+                    html +=
+                        $@"
+                    <tr>
+                        <td align=center>{reportPosition.Title}</td>      
+                        <td align=center>{reportPosition.Description}</td>      
+                        <td align=center>{reportPosition.Value:0.00} zł</td>      
+                    </tr>
+                    ";
+                }
+
+                html += "</table>";
+            }
+            else
+            {
+                html += "-- No data to display -- ";
+            }
+
+            html += @"</<br /><br /><i>The message has been sent automatically from the ReportService application.</i>";
 
             return html;
         }
