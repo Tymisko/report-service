@@ -14,7 +14,8 @@ namespace ReportService
         private const int IntervalInMinutes = 60;
         private readonly Timer _timer = new Timer(IntervalInMinutes * 60000);
         private readonly ErrorRepository _errorRepository = new ErrorRepository();
-        private readonly ReportRepository _reportRepository = new ReportRepository(); 
+        private readonly ReportRepository _reportRepository = new ReportRepository();
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
         public ReportService()
         {
@@ -25,11 +26,22 @@ namespace ReportService
         {
             _timer.Elapsed += DoWork;
             _timer.Start();
+
+            Logger.Info("Service started.");
         }
 
         private void DoWork(object sender, ElapsedEventArgs e)
         {
-            throw new System.NotImplementedException();
+            try
+            {
+                SendError();
+                SendReport();
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, ex.Message);
+                throw;
+            }
         }
 
         private void SendError()
@@ -39,7 +51,8 @@ namespace ReportService
             if (errors == null || errors.Any() == false) return;
 
             // TODO: implement send mail
-            throw new NotImplementedException();
+
+            Logger.Info("Error sent.");
         }
 
         private void SendReport()
@@ -55,10 +68,13 @@ namespace ReportService
             // TODO: send email
 
             _reportRepository.ReportSent(report);
+
+            Logger.Info("Report sent.");
         }
 
         protected override void OnStop()
         {
+            Logger.Info("Service stopped.");
         }
     }
 }
