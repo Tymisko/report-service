@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.ServiceProcess;
@@ -13,16 +14,21 @@ namespace ReportService
 {
     public partial class ReportService : ServiceBase
     {
-        private const int SendHour = 8;
-        private const int IntervalInMinutes = 1;
-        private readonly Timer _timer = new Timer(IntervalInMinutes * 60000);
+        private static readonly int SendingReportHour = Convert.ToInt32(ConfigurationManager.AppSettings["SendingReportHour"]);
+        private static readonly int ErrorReportSendingInterval = Convert.ToInt32(ConfigurationManager.AppSettings["ErrorReportSendingInterval"]);
+        private readonly Timer _timer = new Timer(ErrorReportSendingInterval * 60000);
+
         private readonly ErrorRepository _errorRepository = new ErrorRepository();
         private readonly ReportRepository _reportRepository = new ReportRepository();
+
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         private readonly Email _email;
         private readonly GenerateHtmlEmail _htmlEmail = new GenerateHtmlEmail();
         private readonly string _emailReceiver;
+
         private readonly StringCipher _stringCipher = new StringCipher("175219F3-E67D-49D3-80D4-208E983BB6ED");
+        private const string NotEncryptedPasswordPrefix = "encrypt:";
 
 
         public ReportService()
@@ -56,7 +62,7 @@ namespace ReportService
 
             if (encryptedPassword.StartsWith("encrypt:"))
             {
-                encryptedPassword = _stringCipher.Encrypt(encryptedPassword.Replace("encrypt:", ""));
+                encryptedPassword = _stringCipher.Encrypt(encryptedPassword.Replace(NotEncryptedPasswordPrefix, ""));
 
                 var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 configFile.AppSettings.Settings["SenderEmailPassword"].Value = encryptedPassword;
@@ -65,6 +71,7 @@ namespace ReportService
 
             return _stringCipher.Decrypt(encryptedPassword);
         }
+
 
         protected override void OnStart(string[] args)
         {
@@ -90,11 +97,11 @@ namespace ReportService
 
         private async Task SendErrorAsync()
         {
-            var errors = _errorRepository.GetLastErrors(IntervalInMinutes);
+            var errors = _errorRepository.GetLastErrors(ErrorReportSendingInterval);
 
             if (errors == null || errors.Any() == false) return;
 
-            await _email.SendAsync("Errors in application", _htmlEmail.GenerateErrors(errors, IntervalInMinutes),
+            await _email.SendAsync("Errors in application", _htmlEmail.GenerateErrors(errors, ErrorReportSendingInterval),
                 _emailReceiver);
 
             Logger.Info("Error sent.");
@@ -104,7 +111,7 @@ namespace ReportService
         {
             var actualHour = DateTime.Now.Hour;
 
-            if (actualHour < SendHour) return;
+            if (actualHour < SendingReportHour) return;
 
             var report = _reportRepository.GetLastNotSentReport();
 
