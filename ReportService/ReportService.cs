@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Configuration;
 using System.Linq;
 using System.ServiceProcess;
@@ -14,9 +13,9 @@ namespace ReportService
 {
     public partial class ReportService : ServiceBase
     {
-        private static readonly int SendingReportHour = Convert.ToInt32(ConfigurationManager.AppSettings["SendingReportHour"]);
-        private static readonly int ErrorReportSendingInterval = Convert.ToInt32(ConfigurationManager.AppSettings["ErrorReportSendingInterval"]);
-        private readonly Timer _timer = new Timer(ErrorReportSendingInterval * 60000);
+        private static int _sendingReportHour;
+        private static int _errorReportSendingInterval;
+        private readonly Timer _timer;
 
         private readonly ErrorRepository _errorRepository = new ErrorRepository();
         private readonly ReportRepository _reportRepository = new ReportRepository();
@@ -38,6 +37,9 @@ namespace ReportService
             try
             {
                 _emailReceiver = ConfigurationManager.AppSettings["ReceiverEmail"];
+                _sendingReportHour = Convert.ToInt32(ConfigurationManager.AppSettings["SendingReportHour"]);
+                _errorReportSendingInterval = Convert.ToInt32(ConfigurationManager.AppSettings["ErrorReportSendingInterval"]);
+                _timer = new Timer(_errorReportSendingInterval * 60000);
 
                 _email = new Email(new EmailParams
                 {
@@ -97,11 +99,11 @@ namespace ReportService
 
         private async Task SendErrorAsync()
         {
-            var errors = _errorRepository.GetLastErrors(ErrorReportSendingInterval);
+            var errors = _errorRepository.GetLastErrors(_errorReportSendingInterval);
 
             if (errors == null || errors.Any() == false) return;
 
-            await _email.SendAsync("Errors in application", _htmlEmail.GenerateErrors(errors, ErrorReportSendingInterval),
+            await _email.SendAsync("Errors in application", _htmlEmail.GenerateErrors(errors, _errorReportSendingInterval),
                 _emailReceiver);
 
             Logger.Info("Error sent.");
@@ -111,7 +113,7 @@ namespace ReportService
         {
             var actualHour = DateTime.Now.Hour;
 
-            if (actualHour < SendingReportHour) return;
+            if (actualHour < _sendingReportHour) return;
 
             var report = _reportRepository.GetLastNotSentReport();
 

@@ -13,7 +13,7 @@ namespace ReportService.ConsoleApp
     internal class Program
     {
         private static GenerateHtmlEmail _htmlEmail = new GenerateHtmlEmail();
-        private static string _emailReceiver = "urbasjanek@gmail.com";
+        private static string _emailReceiver = "";
 
         private static string DecryptSenderEmailPassword()
         {
