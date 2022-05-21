@@ -17,7 +17,7 @@ This is an educational project. Getting report real data from external databases
 
 ### Installation
 0. Download the file from [github release page](https://github.com/Tymisko/report-service/releases) and extract it.
-1. Set the configuration data:
+1. Set the configuration data in ReportService.exe.config:
     - fill your mailbox settings (by default SMTP is set to Gmail)
     - your password must have `encrypt:` prefix
     - Enter your error report sending interval (in minutes)
