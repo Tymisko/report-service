@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using ReportService.Core.Domains;
 
-namespace ReportService.Repositories
+namespace ReportService.Core.Repositories
 {
-    public class ErrorRepository
+    internal class ErrorRepository
     {
         public List<Error> GetLastErrors(int intervalInMinutes)
         {

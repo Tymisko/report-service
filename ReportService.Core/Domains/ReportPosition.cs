@@ -1,8 +1,6 @@
-﻿using System.Runtime.InteropServices;
-
-namespace ReportService.Models.Domains
+﻿namespace ReportService.Core.Domains
 {
-    internal class ReportPosition
+    public class ReportPosition
     {
         public int Id { get; set; }
         public int ReportId { get; set; }

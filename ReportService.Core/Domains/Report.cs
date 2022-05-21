@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ReportService.Models.Domains
+namespace ReportService.Core.Domains
 {
-    internal class Report
+    public class Report
     {
         public int Id { get; set; }
         public string Title { get; set; }

@@ -1,9 +1,9 @@
 ﻿
 using System;
 
-namespace ReportService.Models.Domains
+namespace ReportService.Core.Domains
 {
-    internal class Error
+    public class Error
     {
         public int Id { get; set; }
         public string Message { get; set; }

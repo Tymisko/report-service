@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ReportService.Models.Domains;
+using ReportService.Core.Domains;
 
-namespace ReportService.Models
+namespace ReportService.Core
 {
-    internal class GenerateHtmlEmail
+    public class GenerateHtmlEmail
     {
         public string GenerateErrors(List<Error> errors, int interval)
         {
@@ -43,7 +41,7 @@ namespace ReportService.Models
                     ";
             }
 
-            html += @"</table><br /><br /><i>The message has been sent automatically from the ReportService application.</i>";
+            html += @"</table><br /><br /><i>This message has been sent automatically from the ReportService application.</i>";
 
             return html;
         }
@@ -86,7 +84,7 @@ namespace ReportService.Models
                 html += "-- No data to display -- ";
             }
 
-            html += @"</<br /><br /><i>The message has been sent automatically from the ReportService application.</i>";
+            html += @"</<br /><br /><i>This message has been sent automatically from the ReportService application.</i>";
 
             return html;
         }

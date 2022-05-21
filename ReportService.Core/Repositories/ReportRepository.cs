@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ReportService.Core.Domains;
 
-namespace ReportService.Repositories
+namespace ReportService.Core.Repositories
 {
     internal class ReportRepository
     {
